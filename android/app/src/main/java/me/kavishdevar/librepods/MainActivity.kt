@@ -126,7 +126,7 @@ import me.kavishdevar.librepods.screens.HearingAidAdjustmentsScreen
 import me.kavishdevar.librepods.screens.HearingAidScreen
 import me.kavishdevar.librepods.screens.HearingProtectionScreen
 import me.kavishdevar.librepods.screens.LongPress
-import me.kavishdevar.librepods.screens.Onboarding
+// import me.kavishdevar.librepods.screens.Onboarding
 import me.kavishdevar.librepods.screens.OpenSourceLicensesScreen
 import me.kavishdevar.librepods.screens.RenameScreen
 import me.kavishdevar.librepods.screens.TransparencySettingsScreen
@@ -135,7 +135,7 @@ import me.kavishdevar.librepods.screens.UpdateHearingTestScreen
 import me.kavishdevar.librepods.screens.VersionScreen
 import me.kavishdevar.librepods.services.AirPodsService
 import me.kavishdevar.librepods.ui.theme.LibrePodsTheme
-import me.kavishdevar.librepods.utils.RadareOffsetFinder
+// import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -267,7 +267,7 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     val isConnected = remember { mutableStateOf(false) }
     val isRemotelyConnected = remember { mutableStateOf(false) }
-    val hookAvailable = RadareOffsetFinder(LocalContext.current).isHookOffsetAvailable()
+//    val hookAvailable = RadareOffsetFinder(LocalContext.current).isHookOffsetAvailable()
     val context = LocalContext.current
     var canDrawOverlays by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
     val overlaySkipped = remember { mutableStateOf(context.getSharedPreferences("settings", MODE_PRIVATE).getBoolean("overlay_permission_skipped", false)) }
@@ -321,7 +321,7 @@ fun Main() {
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = if (hookAvailable) "settings" else "onboarding",
+                    startDestination = "settings", // if (hookAvailable) "settings" else "onboarding",
                     enterTransition = {
                         slideInHorizontally(
                             initialOffsetX = { it },
@@ -379,9 +379,9 @@ fun Main() {
                     composable("head_tracking") {
                         HeadTrackingScreen()
                     }
-                    composable("onboarding") {
+                    /*composable("onboarding") {
                         Onboarding(navController, context)
-                    }
+                    }*/
                     composable("accessibility") {
                         AccessibilitySettingsScreen(navController)
                     }
@@ -419,7 +419,7 @@ fun Main() {
 
             LaunchedEffect(navController) {
                 navController.addOnDestinationChangedListener { _, destination, _ ->
-                    showBackButton.value = destination.route != "settings" && destination.route != "onboarding"
+                    showBackButton.value = destination.route != "settings" // && destination.route != "onboarding"
                     Log.d("MainActivity", "Navigated to ${destination.route}, showBackButton: ${showBackButton.value}")
                 }
             }

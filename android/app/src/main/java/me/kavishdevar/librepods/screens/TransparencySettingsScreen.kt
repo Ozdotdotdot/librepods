@@ -71,7 +71,7 @@ import me.kavishdevar.librepods.composables.StyledSlider
 import me.kavishdevar.librepods.composables.StyledToggle
 import me.kavishdevar.librepods.services.ServiceManager
 import me.kavishdevar.librepods.utils.ATTHandles
-import me.kavishdevar.librepods.utils.RadareOffsetFinder
+// import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import me.kavishdevar.librepods.utils.TransparencySettings
 import me.kavishdevar.librepods.utils.parseTransparencySettingsResponse
 import me.kavishdevar.librepods.utils.sendTransparencySettings
@@ -90,8 +90,8 @@ fun TransparencySettingsScreen(navController: NavController) {
     val verticalScrollState = rememberScrollState()
     val attManager = ServiceManager.getService()?.attManager ?: return
     val aacpManager = remember { ServiceManager.getService()?.aacpManager }
-    val isSdpOffsetAvailable =
-        remember { mutableStateOf(RadareOffsetFinder.isSdpOffsetAvailable()) }
+    val isSdpOffsetAvailable = remember { mutableStateOf(true) } // always available rn, for testing without radare
+//         remember { mutableStateOf(RadareOffsetFinder.isSdpOffsetAvailable()) }
 
     val trackColor = if (isDarkTheme) Color(0xFFB3B3B3) else Color(0xFF929491)
     val activeTrackColor = if (isDarkTheme) Color(0xFF007AFF) else Color(0xFF3C6DF5)

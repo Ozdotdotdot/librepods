@@ -84,7 +84,7 @@ import me.kavishdevar.librepods.composables.StyledScaffold
 import me.kavishdevar.librepods.composables.StyledSlider
 import me.kavishdevar.librepods.composables.StyledToggle
 import me.kavishdevar.librepods.utils.AACPManager
-import me.kavishdevar.librepods.utils.RadareOffsetFinder
+//import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.math.roundToInt
@@ -185,7 +185,7 @@ fun AppSettingsScreen(navController: NavController) {
     }
 
     val isProcessingSdp = remember { mutableStateOf(false) }
-    val actAsAppleDevice = remember { mutableStateOf(false) }
+//     val actAsAppleDevice = remember { mutableStateOf(false) }
 
     BackHandler(enabled = isProcessingSdp.value) {}
 
@@ -575,12 +575,12 @@ fun AppSettingsScreen(navController: NavController) {
                 description = stringResource(R.string.troubleshooting_description)
             )
 
-            LaunchedEffect(Unit) {
-                actAsAppleDevice.value = RadareOffsetFinder.isSdpOffsetAvailable()
-            }
+//             LaunchedEffect(Unit) {
+//                 actAsAppleDevice.value = RadareOffsetFinder.isSdpOffsetAvailable()
+//             }
             val restartBluetoothText = stringResource(R.string.found_offset_restart_bluetooth)
 
-            StyledToggle(
+            /*StyledToggle(
                 label = stringResource(R.string.act_as_an_apple_device),
                 description = stringResource(R.string.act_as_an_apple_device_description),
                 checkedState = actAsAppleDevice,
@@ -602,7 +602,7 @@ fun AppSettingsScreen(navController: NavController) {
                 },
                 independent = true,
                 enabled = !isProcessingSdp.value
-            )
+            )*/
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -650,70 +650,70 @@ fun AppSettingsScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (showResetDialog.value) {
-                AlertDialog(
-                    onDismissRequest = { showResetDialog.value = false },
-                    title = {
-                        Text(
-                            "Reset Hook Offset",
-                            fontFamily = FontFamily(Font(R.font.sf_pro)),
-                            fontWeight = FontWeight.Medium
-                        )
-                    },
-                    text = {
-                        Text(
-                            stringResource(R.string.reset_hook_offset_description),
-                            fontFamily = FontFamily(Font(R.font.sf_pro))
-                        )
-                    },
-                    confirmButton = {
-                        val successText = stringResource(R.string.hook_offset_reset_success)
-                        val failureText = stringResource(R.string.hook_offset_reset_failure)
-                        TextButton(
-                            onClick = {
-                                if (RadareOffsetFinder.clearHookOffsets()) {
-                                    Toast.makeText(
-                                        context,
-                                        successText,
-                                        Toast.LENGTH_LONG
-                                    ).show()
-
-                                    navController.navigate("onboarding") {
-                                        popUpTo("settings") { inclusive = true }
-                                    }
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        failureText,
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                                showResetDialog.value = false
-                            },
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text(
-                                stringResource(R.string.reset),
-                                fontFamily = FontFamily(Font(R.font.sf_pro)),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showResetDialog.value = false }
-                        ) {
-                            Text(
-                                "Cancel",
-                                fontFamily = FontFamily(Font(R.font.sf_pro)),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                )
-            }
+//             if (showResetDialog.value) {
+//                 AlertDialog(
+//                     onDismissRequest = { showResetDialog.value = false },
+//                     title = {
+//                         Text(
+//                             "Reset Hook Offset",
+//                             fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                             fontWeight = FontWeight.Medium
+//                         )
+//                     },
+//                     text = {
+//                         Text(
+//                             stringResource(R.string.reset_hook_offset_description),
+//                             fontFamily = FontFamily(Font(R.font.sf_pro))
+//                         )
+//                     },
+//                     confirmButton = {
+//                         val successText = stringResource(R.string.hook_offset_reset_success)
+//                         val failureText = stringResource(R.string.hook_offset_reset_failure)
+//                         TextButton(
+//                             onClick = {
+//                                 if (RadareOffsetFinder.clearHookOffsets()) {
+//                                     Toast.makeText(
+//                                         context,
+//                                         successText,
+//                                         Toast.LENGTH_LONG
+//                                     ).show()
+//
+//                                     navController.navigate("onboarding") {
+//                                         popUpTo("settings") { inclusive = true }
+//                                     }
+//                                 } else {
+//                                     Toast.makeText(
+//                                         context,
+//                                         failureText,
+//                                         Toast.LENGTH_SHORT
+//                                     ).show()
+//                                 }
+//                                 showResetDialog.value = false
+//                             },
+//                             colors = ButtonDefaults.textButtonColors(
+//                                 contentColor = MaterialTheme.colorScheme.error
+//                             )
+//                         ) {
+//                             Text(
+//                                 stringResource(R.string.reset),
+//                                 fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                                 fontWeight = FontWeight.Medium
+//                             )
+//                         }
+//                     },
+//                     dismissButton = {
+//                         TextButton(
+//                             onClick = { showResetDialog.value = false }
+//                         ) {
+//                             Text(
+//                                 "Cancel",
+//                                 fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                                 fontWeight = FontWeight.Medium
+//                             )
+//                         }
+//                     }
+//                 )
+//             }
 
             if (showIrkDialog.value) {
                 AlertDialog(

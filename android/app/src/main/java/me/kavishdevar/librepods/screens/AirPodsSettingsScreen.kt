@@ -97,7 +97,7 @@ import me.kavishdevar.librepods.services.AirPodsService
 import me.kavishdevar.librepods.ui.theme.LibrePodsTheme
 import me.kavishdevar.librepods.utils.AACPManager
 import me.kavishdevar.librepods.utils.Capability
-import me.kavishdevar.librepods.utils.RadareOffsetFinder
+// import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
@@ -265,13 +265,13 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
                         independent = true
                     )
                 }
-                val actAsAppleDeviceHookEnabled = RadareOffsetFinder.isSdpOffsetAvailable()
-                if (actAsAppleDeviceHookEnabled) {
+//                 val actAsAppleDeviceHookEnabled = RadareOffsetFinder.isSdpOffsetAvailable()
+//                 if (actAsAppleDeviceHookEnabled) {
                     item(key = "spacer_hearing_health") { Spacer(modifier = Modifier.height(32.dp)) }
                     item(key = "hearing_health") {
                         HearingHealthSettings(navController = navController)
                     }
-                }
+//                 }
 
                 if (capabilities.contains(Capability.LISTENING_MODE)) {
                     item(key = "spacer_noise") { Spacer(modifier = Modifier.height(16.dp)) }
