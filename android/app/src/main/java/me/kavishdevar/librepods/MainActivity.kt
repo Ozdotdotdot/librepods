@@ -108,14 +108,14 @@ import me.kavishdevar.librepods.screens.AppSettingsScreen
 import me.kavishdevar.librepods.screens.DebugScreen
 import me.kavishdevar.librepods.screens.HeadTrackingScreen
 import me.kavishdevar.librepods.screens.LongPress
-import me.kavishdevar.librepods.screens.Onboarding
+// import me.kavishdevar.librepods.screens.Onboarding
 import me.kavishdevar.librepods.screens.RenameScreen
 import me.kavishdevar.librepods.screens.TroubleshootingScreen
 import me.kavishdevar.librepods.services.AirPodsService
 import me.kavishdevar.librepods.ui.theme.LibrePodsTheme
 import me.kavishdevar.librepods.utils.AirPodsNotifications
 import me.kavishdevar.librepods.utils.CrossDevice
-import me.kavishdevar.librepods.utils.RadareOffsetFinder
+// import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 lateinit var serviceConnection: ServiceConnection
@@ -182,7 +182,7 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     val isConnected = remember { mutableStateOf(false) }
     val isRemotelyConnected = remember { mutableStateOf(false) }
-    val hookAvailable = RadareOffsetFinder(LocalContext.current).isHookOffsetAvailable()
+//     val hookAvailable = RadareOffsetFinder(LocalContext.current).isHookOffsetAvailable()
     val context = LocalContext.current
     var canDrawOverlays by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
     val overlaySkipped = remember { mutableStateOf(context.getSharedPreferences("settings", MODE_PRIVATE).getBoolean("overlay_permission_skipped", false)) }
@@ -243,7 +243,7 @@ fun Main() {
         ) {
             NavHost(
                 navController = navController,
-                startDestination = if (hookAvailable) "settings" else "onboarding",
+                startDestination = "settings", // if (hookAvailable) "settings" else "onboarding",
                 enterTransition = {
                     slideInHorizontally(
                         initialOffsetX = { it },
@@ -301,9 +301,9 @@ fun Main() {
                 composable("head_tracking") {
                     HeadTrackingScreen(navController)
                 }
-                composable("onboarding") {
-                    Onboarding(navController, context)
-                }
+//                composable("onboarding") {
+//                    Onboarding(navController, context)
+//                }
             }
         }
 

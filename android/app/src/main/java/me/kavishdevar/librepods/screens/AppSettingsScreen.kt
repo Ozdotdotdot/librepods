@@ -96,7 +96,7 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.composables.StyledSwitch
 import me.kavishdevar.librepods.utils.AACPManager
-import me.kavishdevar.librepods.utils.RadareOffsetFinder
+//import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.math.roundToInt
@@ -1107,68 +1107,68 @@ fun AppSettingsScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            if (showResetDialog) {
-                AlertDialog(
-                    onDismissRequest = { showResetDialog = false },
-                    title = {
-                        Text(
-                            "Reset Hook Offset",
-                            fontFamily = FontFamily(Font(R.font.sf_pro)),
-                            fontWeight = FontWeight.Medium
-                        )
-                    },
-                    text = {
-                        Text(
-                            "This will clear the current hook offset and require you to go through the setup process again. Are you sure you want to continue?",
-                            fontFamily = FontFamily(Font(R.font.sf_pro))
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                if (RadareOffsetFinder.clearHookOffsets()) {
-                                    Toast.makeText(
-                                        context,
-                                        "Hook offset has been reset. Redirecting to setup...",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-
-                                    navController.navigate("onboarding") {
-                                        popUpTo("settings") { inclusive = true }
-                                    }
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "Failed to reset hook offset",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                                showResetDialog = false
-                            },
-                            colors = ButtonDefaults.textButtonColors(
-                                contentColor = MaterialTheme.colorScheme.error
-                            )
-                        ) {
-                            Text(
-                                "Reset",
-                                fontFamily = FontFamily(Font(R.font.sf_pro)),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showResetDialog = false }
-                        ) {
-                            Text(
-                                "Cancel",
-                                fontFamily = FontFamily(Font(R.font.sf_pro)),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-                )
-            }
+//             if (showResetDialog) {
+//                 AlertDialog(
+//                     onDismissRequest = { showResetDialog = false },
+//                     title = {
+//                         Text(
+//                             "Reset Hook Offset",
+//                             fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                             fontWeight = FontWeight.Medium
+//                         )
+//                     },
+//                     text = {
+//                         Text(
+//                             "This will clear the current hook offset and require you to go through the setup process again. Are you sure you want to continue?",
+//                             fontFamily = FontFamily(Font(R.font.sf_pro))
+//                         )
+//                     },
+//                     confirmButton = {
+//                         TextButton(
+//                             onClick = {
+//                                 if (RadareOffsetFinder.clearHookOffsets()) {
+//                                     Toast.makeText(
+//                                         context,
+//                                         "Hook offset has been reset. Redirecting to setup...",
+//                                         Toast.LENGTH_LONG
+//                                     ).show()
+//
+//                                     navController.navigate("onboarding") {
+//                                         popUpTo("settings") { inclusive = true }
+//                                     }
+//                                 } else {
+//                                     Toast.makeText(
+//                                         context,
+//                                         "Failed to reset hook offset",
+//                                         Toast.LENGTH_SHORT
+//                                     ).show()
+//                                 }
+//                                 showResetDialog = false
+//                             },
+//                             colors = ButtonDefaults.textButtonColors(
+//                                 contentColor = MaterialTheme.colorScheme.error
+//                             )
+//                         ) {
+//                             Text(
+//                                 "Reset",
+//                                 fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                                 fontWeight = FontWeight.Medium
+//                             )
+//                         }
+//                     },
+//                     dismissButton = {
+//                         TextButton(
+//                             onClick = { showResetDialog = false }
+//                         ) {
+//                             Text(
+//                                 "Cancel",
+//                                 fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                                 fontWeight = FontWeight.Medium
+//                             )
+//                         }
+//                     }
+//                 )
+//             }
 
             if (showIrkDialog) {
                 AlertDialog(

@@ -1,28 +1,32 @@
-#pragma once
+/*
+    LibrePods - AirPods liberated from Apple’s ecosystem
+    Copyright (C) 2025 LibrePods contributors
 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+#pragma once
 #include <cstdint>
-#include <vector>
 
 typedef int (*HookFunType)(void *func, void *replace, void **backup);
-
-typedef int (*UnhookFunType)(void *func);
 
 typedef void (*NativeOnModuleLoaded)(const char *name, void *handle);
 
 typedef struct {
     uint32_t version;
-    HookFunType hook_func;
-    UnhookFunType unhook_func;
+    void* hook_func;
+    void* unhook_func;
 } NativeAPIEntries;
 
-[[maybe_unused]] typedef NativeOnModuleLoaded (*NativeInit)(const NativeAPIEntries *entries);
-
-typedef struct t_l2c_ccb tL2C_CCB;
-typedef struct t_l2c_lcb tL2C_LCB;
-
-uintptr_t loadHookOffset(const char* package_name);
-uintptr_t getModuleBase(const char *module_name);
-uintptr_t loadL2cuProcessCfgReqOffset();
-uintptr_t loadL2cCsmConfigOffset();
-uintptr_t loadL2cuSendPeerInfoReqOffset();
-bool findAndHookFunction(const char *library_path);
+typedef NativeOnModuleLoaded (*NativeInit)(const NativeAPIEntries *entries);
