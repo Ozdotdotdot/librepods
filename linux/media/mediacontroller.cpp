@@ -434,9 +434,14 @@ bool MediaController::routeAudioToAirPods()
   m_previousDefaultSink = m_pulseAudio->getDefaultSink();
   LOG_INFO("Saving previous default sink: " << m_previousDefaultSink);
 
-  activateA2dpProfile();
-
+  // Try to find the sink before activating A2DP — if it already exists the
+  // profile is already active and calling setCardProfile would briefly remove
+  // the sink, interrupting streams and causing a play/pause in media players.
   QString airpodsSink = m_pulseAudio->getBluetoothSinkName(connectedDeviceMacAddress);
+  if (airpodsSink.isEmpty()) {
+    activateA2dpProfile();
+    airpodsSink = m_pulseAudio->getBluetoothSinkName(connectedDeviceMacAddress);
+  }
   if (airpodsSink.isEmpty()) {
     LOG_ERROR("Could not find Bluetooth sink for device");
     return false;
