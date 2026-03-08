@@ -49,8 +49,13 @@ public:
   void pause();
   MediaState getCurrentMediaState() const;
 
+  bool routeAudioToAirPods();
+  bool routeAudioToSystem();
+  bool isAudioRoutedToAirPods();
+
 Q_SIGNALS:
   void mediaStateChanged(MediaState state);
+  void audioRoutingChanged(bool routedToAirPods);
 
 private:
   MediaState mediaStateFromPlayerctlOutput(const QString &output) const;
@@ -62,6 +67,7 @@ private:
   QString connectedDeviceMacAddress;
   EarDetectionBehavior earDetectionBehavior = PauseWhenOneRemoved;
   QString m_deviceOutputName;
+  QString m_previousDefaultSink;
   PlayerStatusWatcher *playerStatusWatcher = nullptr;
   PulseAudioController *m_pulseAudio = nullptr;
   QString m_cachedA2dpProfile;

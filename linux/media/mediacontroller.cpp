@@ -417,3 +417,70 @@ QString MediaController::getAudioDeviceName()
   }
   return cardName;
 }
+
+bool MediaController::routeAudioToAirPods()
+{
+  if (connectedDeviceMacAddress.isEmpty() || m_deviceOutputName.isEmpty()) {
+    LOG_WARN("No connected device, cannot route audio to AirPods");
+    return false;
+  }
+
+  if (isActiveOutputDeviceAirPods() && !m_previousDefaultSink.isEmpty()) {
+    LOG_INFO("Audio already routed to AirPods, skipping");
+    emit audioRoutingChanged(true);
+    return true;
+  }
+
+  m_previousDefaultSink = m_pulseAudio->getDefaultSink();
+  LOG_INFO("Saving previous default sink: " << m_previousDefaultSink);
+
+  activateA2dpProfile();
+
+  QString airpodsSink = m_pulseAudio->getBluetoothSinkName(connectedDeviceMacAddress);
+  if (airpodsSink.isEmpty()) {
+    LOG_ERROR("Could not find Bluetooth sink for device");
+    return false;
+  }
+  LOG_INFO("Routing audio to AirPods sink: " << airpodsSink);
+
+  if (!m_pulseAudio->setDefaultSink(airpodsSink)) {
+    LOG_ERROR("Failed to set AirPods as default sink");
+    return false;
+  }
+
+  m_pulseAudio->moveSinkInputsToSink(airpodsSink);
+
+  emit audioRoutingChanged(true);
+  return true;
+}
+
+bool MediaController::routeAudioToSystem()
+{
+  if (m_previousDefaultSink.isEmpty()) {
+    LOG_WARN("No previous sink saved, cannot restore audio routing");
+    return false;
+  }
+
+  LOG_INFO("Restoring audio to previous sink: " << m_previousDefaultSink);
+
+  if (!m_pulseAudio->setDefaultSink(m_previousDefaultSink)) {
+    LOG_ERROR("Failed to restore previous default sink");
+    return false;
+  }
+
+  m_pulseAudio->moveSinkInputsToSink(m_previousDefaultSink);
+
+  if (!m_deviceOutputName.isEmpty()) {
+    m_pulseAudio->setCardProfile(m_deviceOutputName, "off");
+  }
+
+  m_previousDefaultSink.clear();
+
+  emit audioRoutingChanged(false);
+  return true;
+}
+
+bool MediaController::isAudioRoutedToAirPods()
+{
+  return isActiveOutputDeviceAirPods();
+}

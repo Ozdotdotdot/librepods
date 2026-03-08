@@ -20,6 +20,9 @@ public:
     bool setCardProfile(const QString &cardName, const QString &profileName);
     QString getCardNameForDevice(const QString &macAddress);
     bool isProfileAvailable(const QString &cardName, const QString &profileName);
+    bool setDefaultSink(const QString &sinkName);
+    bool moveSinkInputsToSink(const QString &sinkName);
+    QString getBluetoothSinkName(const QString &macAddress);
 
 private:
     pa_threaded_mainloop *m_mainloop;

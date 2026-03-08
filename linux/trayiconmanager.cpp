@@ -8,6 +8,7 @@
 #include <QFont>
 #include <QColor>
 #include <QActionGroup>
+#include <QSignalBlocker>
 
 using namespace AirpodsTrayApp::Enums;
 
@@ -76,6 +77,14 @@ void TrayIconManager::setupMenuActions()
     connect(caToggleAction, &QAction::triggered, this, [this](bool checked)
             { emit conversationalAwarenessToggled(checked); });
 
+    // Audio Routing
+    m_audioRoutingAction = new QAction(tr("Route Audio to AirPods"), trayMenu);
+    m_audioRoutingAction->setCheckable(true);
+    m_audioRoutingAction->setEnabled(false);
+    trayMenu->addAction(m_audioRoutingAction);
+    connect(m_audioRoutingAction, &QAction::triggered, this,
+            [this](bool checked) { emit audioRoutingToggled(checked); });
+
     trayMenu->addSeparator();
 
     // Noise Control Options
@@ -142,5 +151,22 @@ void TrayIconManager::onTrayIconActivated(QSystemTrayIcon::ActivationReason reas
     {
         emit trayClicked();
     }
+}
+
+void TrayIconManager::setAudioRoutingEnabled(bool enabled)
+{
+    m_audioRoutingAction->setEnabled(enabled);
+}
+
+void TrayIconManager::setAudioRoutingChecked(bool checked)
+{
+    QSignalBlocker blocker(m_audioRoutingAction);
+    m_audioRoutingAction->setChecked(checked);
+}
+
+void TrayIconManager::setAudioRoutingDeviceName(const QString &name)
+{
+    QString label = name.isEmpty() ? tr("AirPods") : name;
+    m_audioRoutingAction->setText(tr("Route Audio to %1").arg(label));
 }
 

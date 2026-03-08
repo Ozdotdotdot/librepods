@@ -1,6 +1,7 @@
 #include "pulseaudiocontroller.h"
 #include "logger.h"
 #include <QThread>
+#include <QList>
 
 PulseAudioController::PulseAudioController(QObject *parent)
     : QObject(parent), m_mainloop(nullptr), m_context(nullptr), m_initialized(false)
@@ -294,4 +295,137 @@ bool PulseAudioController::waitForOperation(pa_operation *op)
     }
 
     return pa_operation_get_state(op) == PA_OPERATION_DONE;
+}
+
+bool PulseAudioController::setDefaultSink(const QString &sinkName)
+{
+    if (!m_initialized) return false;
+
+    pa_threaded_mainloop_lock(m_mainloop);
+
+    auto successCallback = [](pa_context *c, int success, void *userdata) {
+        pa_threaded_mainloop *mainloop = static_cast<pa_threaded_mainloop*>(userdata);
+        pa_threaded_mainloop_signal(mainloop, 0);
+    };
+
+    pa_operation *op = pa_context_set_default_sink(
+        m_context,
+        sinkName.toUtf8().constData(),
+        successCallback,
+        m_mainloop);
+
+    bool success = waitForOperation(op);
+    if (op) pa_operation_unref(op);
+    pa_threaded_mainloop_unlock(m_mainloop);
+
+    return success;
+}
+
+bool PulseAudioController::moveSinkInputsToSink(const QString &sinkName)
+{
+    if (!m_initialized) return false;
+
+    struct CallbackData {
+        QList<uint32_t> inputIndices;
+        pa_threaded_mainloop *mainloop;
+    } data;
+    data.mainloop = m_mainloop;
+
+    auto listCallback = [](pa_context *c, const pa_sink_input_info *info,
+                           int eol, void *userdata)
+    {
+        CallbackData *d = static_cast<CallbackData*>(userdata);
+        if (eol > 0)
+        {
+            pa_threaded_mainloop_signal(d->mainloop, 0);
+            return;
+        }
+        if (info)
+        {
+            d->inputIndices.append(info->index);
+        }
+    };
+
+    pa_threaded_mainloop_lock(m_mainloop);
+    pa_operation *listOp = pa_context_get_sink_input_info_list(m_context, listCallback, &data);
+    if (listOp)
+    {
+        waitForOperation(listOp);
+        pa_operation_unref(listOp);
+    }
+    pa_threaded_mainloop_unlock(m_mainloop);
+
+    auto successCallback = [](pa_context *c, int success, void *userdata) {
+        pa_threaded_mainloop *mainloop = static_cast<pa_threaded_mainloop*>(userdata);
+        pa_threaded_mainloop_signal(mainloop, 0);
+    };
+
+    bool allSucceeded = true;
+    for (uint32_t idx : data.inputIndices)
+    {
+        pa_threaded_mainloop_lock(m_mainloop);
+        pa_operation *moveOp = pa_context_move_sink_input_by_name(
+            m_context,
+            idx,
+            sinkName.toUtf8().constData(),
+            successCallback,
+            m_mainloop);
+        bool ok = waitForOperation(moveOp);
+        if (moveOp) pa_operation_unref(moveOp);
+        pa_threaded_mainloop_unlock(m_mainloop);
+
+        if (!ok) allSucceeded = false;
+    }
+
+    return allSucceeded;
+}
+
+QString PulseAudioController::getBluetoothSinkName(const QString &macAddress)
+{
+    if (!m_initialized) return QString();
+
+    QString normalisedMac = macAddress;
+    normalisedMac.replace(":", "_").replace("-", "_");
+
+    struct CallbackData {
+        QString sinkName;
+        QString targetMac;
+        pa_threaded_mainloop *mainloop;
+    } data;
+    data.targetMac = normalisedMac.toUpper();
+    data.mainloop = m_mainloop;
+
+    auto callback = [](pa_context *c, const pa_sink_info *info,
+                       int eol, void *userdata)
+    {
+        CallbackData *d = static_cast<CallbackData*>(userdata);
+        if (eol > 0)
+        {
+            pa_threaded_mainloop_signal(d->mainloop, 0);
+            return;
+        }
+        if (info && d->sinkName.isEmpty())
+        {
+            QString name = QString::fromUtf8(info->name);
+            QString nameNorm = name.toUpper();
+            nameNorm.replace(":", "_").replace("-", "_");
+            if ((nameNorm.startsWith("BLUEZ_OUTPUT") || nameNorm.startsWith("BLUEZ_SINK"))
+                && nameNorm.contains(d->targetMac))
+            {
+                d->sinkName = name;
+                pa_threaded_mainloop_signal(d->mainloop, 0);
+            }
+        }
+    };
+
+    pa_threaded_mainloop_lock(m_mainloop);
+    pa_operation *op = pa_context_get_sink_info_list(m_context, callback, &data);
+    if (op)
+    {
+        waitForOperation(op);
+        pa_operation_unref(op);
+    }
+    pa_threaded_mainloop_unlock(m_mainloop);
+
+    return data.sinkName;
 }

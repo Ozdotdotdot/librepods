@@ -23,6 +23,10 @@ public:
 
     void showNotification(const QString &title, const QString &message);
 
+    void setAudioRoutingEnabled(bool enabled);
+    void setAudioRoutingChecked(bool checked);
+    void setAudioRoutingDeviceName(const QString &name);
+
     bool notificationsEnabled() const { return m_notificationsEnabled; }
     void setNotificationsEnabled(bool enabled)
     {
@@ -49,6 +53,7 @@ private:
     QSystemTrayIcon *trayIcon;
     QMenu *trayMenu;
     QAction *caToggleAction;
+    QAction *m_audioRoutingAction;
     QActionGroup *noiseControlGroup;
     bool m_notificationsEnabled = true;
 
@@ -60,6 +65,7 @@ signals:
     void trayClicked();
     void noiseControlChanged(AirpodsTrayApp::Enums::NoiseControlMode);
     void conversationalAwarenessToggled(bool enabled);
+    void audioRoutingToggled(bool routeToAirPods);
     void openApp();
     void openSettings();
 };

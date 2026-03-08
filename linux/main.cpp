@@ -75,7 +75,13 @@ public:
         // Initialize MediaController and connect signals
         mediaController = new MediaController(this);
         connect(mediaController, &MediaController::mediaStateChanged, this, &AirPodsTrayApp::handleMediaStateChange);
+        connect(mediaController, &MediaController::audioRoutingChanged, this, [this](bool routed) {
+            trayManager->setAudioRoutingChecked(routed);
+        });
         mediaController->followMediaChanges();
+
+        connect(trayManager, &TrayIconManager::audioRoutingToggled, this, &AirPodsTrayApp::onAudioRoutingToggled);
+        connect(m_deviceInfo, &DeviceInfo::deviceNameChanged, trayManager, &TrayIconManager::setAudioRoutingDeviceName);
 
         monitor = new BluetoothMonitor(this);
         connect(monitor, &BluetoothMonitor::deviceConnected, this, &AirPodsTrayApp::bluezDeviceConnected);
@@ -108,6 +114,9 @@ public:
                     QString formattedAddress = address.toString().replace(":", "_");
                     mediaController->setConnectedDeviceMacAddress(formattedAddress);
                     mediaController->activateA2dpProfile();
+                    trayManager->setAudioRoutingDeviceName(m_deviceInfo->deviceName());
+                    trayManager->setAudioRoutingEnabled(true);
+                    trayManager->setAudioRoutingChecked(mediaController->isAudioRoutedToAirPods());
                     LOG_INFO("A2DP profile activation attempted for AirPods found on startup");
                 });
                 return;
@@ -433,6 +442,9 @@ public slots:
             QTimer::singleShot(1000, this, [this]()
             {
                 mediaController->activateA2dpProfile();
+                trayManager->setAudioRoutingDeviceName(m_deviceInfo->deviceName());
+                trayManager->setAudioRoutingEnabled(true);
+                trayManager->setAudioRoutingChecked(mediaController->isAudioRoutedToAirPods());
                 LOG_INFO("A2DP profile activation attempted after system wake-up");
             });
         }
@@ -498,6 +510,9 @@ private slots:
                 formattedAddress = formattedAddress.replace(":", "_");
                 mediaController->setConnectedDeviceMacAddress(formattedAddress);
                 mediaController->activateA2dpProfile();
+                trayManager->setAudioRoutingDeviceName(m_deviceInfo->deviceName());
+                trayManager->setAudioRoutingEnabled(true);
+                trayManager->setAudioRoutingChecked(mediaController->isAudioRoutedToAirPods());
                 LOG_INFO("A2DP profile activation attempted for newly connected device");
             }
         });
@@ -520,6 +535,8 @@ private slots:
 
         // Clear the device name and model
         m_deviceInfo->reset();
+        trayManager->setAudioRoutingEnabled(false);
+        trayManager->setAudioRoutingChecked(false);
         m_bleManager->startScan();
         emit airPodsStatusChanged();
 
@@ -890,6 +907,21 @@ public:
             LOG_INFO("Media started playing, sending disconnect request to Android and taking over audio");
             sendDisconnectRequestToAndroid();
             connectToAirPods(true);
+        }
+    }
+
+    void onAudioRoutingToggled(bool routeToAirPods)
+    {
+        if (routeToAirPods) {
+            if (!mediaController->routeAudioToAirPods()) {
+                LOG_ERROR("Failed to route audio to AirPods");
+                trayManager->setAudioRoutingChecked(false);
+            }
+        } else {
+            if (!mediaController->routeAudioToSystem()) {
+                LOG_ERROR("Failed to restore audio to system");
+                trayManager->setAudioRoutingChecked(true);
+            }
         }
     }
 
